@@ -19,7 +19,7 @@ function processConfig(config: AxiosRequestConfig): void {
 
 function transfromURL(config: AxiosRequestConfig): string {
   const {url, params} = config
-  return buildURL(url, params)
+  return buildURL(url!, params)
 }
 
 function tranfromRequestData(config: AxiosRequestConfig): any {

@@ -16,8 +16,8 @@ export interface AxiosRequestConfig {
   timeout?: number
 }
 
-export interface AxiosResponse {
-  data: any,
+export interface AxiosResponse<T=any> {
+  data: T,
   status: number,
   statusText: string,
   headers: any,
@@ -25,7 +25,7 @@ export interface AxiosResponse {
   request: any
 }
 
-export interface AxioPromise extends Promise<AxiosResponse> {
+export interface AxioPromise<T=any> extends Promise<AxiosResponse<T>> {
 
 }
 
@@ -40,25 +40,46 @@ export interface AxiosError extends Error{
 
 
 export interface Axios {
-  request(config: AxiosRequestConfig): AxioPromise
+  interceptors: {
+    request: AxiosIntercepterManager<AxiosRequestConfig>,
+    response: AxiosIntercepterManager<AxiosResponse>
+  }
 
-  get(url: string, config: AxiosRequestConfig): AxioPromise
+  request<T=any>(config: AxiosRequestConfig): AxioPromise<T>
 
-  delete(url: string, config: AxiosRequestConfig): AxioPromise
+  get<T=any>(url: string, config: AxiosRequestConfig): AxioPromise<T>
 
-  options(url: string, config: AxiosRequestConfig): AxioPromise
+  delete<T=any>(url: string, config: AxiosRequestConfig): AxioPromise<T>
 
-  head(url: string, config: AxiosRequestConfig): AxioPromise
+  options<T=any>(url: string, config: AxiosRequestConfig): AxioPromise<T>
 
-  post(url: string, data: any, config: AxiosRequestConfig): AxioPromise
+  head<T=any>(url: string, config: AxiosRequestConfig): AxioPromise<T>
 
-  put(url: string, data: any, config: AxiosRequestConfig): AxioPromise
+  post<T=any>(url: string, data: any, config: AxiosRequestConfig): AxioPromise<T>
 
-  patch(url: string, data: any, config: AxiosRequestConfig): AxioPromise
+  put<T=any>(url: string, data: any, config: AxiosRequestConfig): AxioPromise<T>
+
+  patch<T=any>(url: string, data: any, config: AxiosRequestConfig): AxioPromise<T>
 
 }
 
 
 export interface AxiosInstance extends Axios {
-  (config: AxiosRequestConfig): AxioPromise
+  <T=any>(config: AxiosRequestConfig): AxioPromise<T>
+
+  <T=any>(url: string, config?: AxiosRequestConfig): AxioPromise<T>
+}
+
+
+export interface AxiosIntercepterManager<T> {
+  use(resolve: ResolveFn<T>, reject?: RejectFn): number
+  eject(id: number) : void
+}
+
+export interface ResolveFn<T> {
+  (val: T): T | Promise<T>
+}
+
+export interface RejectFn {
+  (val: any): any
 }

@@ -1,8 +1,57 @@
-import { AxiosRequestConfig, AxioPromise } from "../types";
+import { AxiosRequestConfig, AxiosResponse, AxioPromise, RejectFn, ResolveFn } from "../types";
 import dispatchRequest from './dispatchRequest'
+import InterceptorManager from './InterceptorManager'
+
+interface Interceptors {
+  request: InterceptorManager<AxiosRequestConfig>
+  response: InterceptorManager<AxiosResponse>
+}
+
+interface PromiseChain<T> {
+  resolve: ResolveFn<T> | ((config: AxiosRequestConfig) => AxioPromise),
+  reject?: RejectFn
+}
+
 
 export default class Axios {
-  request(config: AxiosRequestConfig): AxioPromise {
+  interceptors: Interceptors
+
+  constructor() {
+    this.interceptors = {
+      request: new InterceptorManager<AxiosRequestConfig>(),
+      response: new InterceptorManager<AxiosResponse>()
+    }
+  }
+
+  request(url: any, config?: any): AxioPromise {
+    if (typeof url === 'string') {
+      if (!config){
+        config = {}
+      }
+      config.url = url
+    } else {
+      config = url
+    }
+    const chain: PromiseChain<any>[] = [{
+      resolve: dispatchRequest,
+      reject: undefined
+    }]
+
+    this.interceptors.request.forEach(interceptor => {
+      chain.unshift(interceptor)
+    })
+
+    this.interceptors.response.forEach(interceptor => {
+      chain.unshift(interceptor)
+    })
+
+    let promise = Promise.resolve(config)
+
+    while (chain.length) {
+      const {resolve, reject} = chain.shift()!
+      promise = promise.then(resolve, reject)
+    }
+
     return dispatchRequest(config)
   }
 
@@ -54,7 +103,7 @@ export default class Axios {
     return this.request(Object.assign(config, {
       method: 'patch',
       url: url,
-      data?
+      data
     }))
   }
 
