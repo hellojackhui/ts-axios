@@ -1,3 +1,4 @@
+
 export type Method = 'get' | 'GET'
 | 'delete' | 'DELETE'
 | 'head' | 'HEAD'
@@ -13,7 +14,10 @@ export interface AxiosRequestConfig {
   params?: any,
   headers?: any,
   responseType?: XMLHttpRequestResponseType,
-  timeout?: number
+  timeout?: number,
+  transformRequest?: AxiosTransformer | AxiosTransformer[],
+  transformResponse?: AxiosTransformer | AxiosTransformer[],
+  [propName: string]: any
 }
 
 export interface AxiosResponse<T=any> {
@@ -40,6 +44,7 @@ export interface AxiosError extends Error{
 
 
 export interface Axios {
+  defaults: AxiosRequestConfig
   interceptors: {
     request: AxiosIntercepterManager<AxiosRequestConfig>,
     response: AxiosIntercepterManager<AxiosResponse>
@@ -70,6 +75,9 @@ export interface AxiosInstance extends Axios {
   <T=any>(url: string, config?: AxiosRequestConfig): AxioPromise<T>
 }
 
+export interface AxiosStatic extends AxiosInstance {
+  create(config?: AxiosRequestConfig): AxiosInstance
+}
 
 export interface AxiosIntercepterManager<T> {
   use(resolve: ResolveFn<T>, reject?: RejectFn): number
@@ -82,4 +90,8 @@ export interface ResolveFn<T> {
 
 export interface RejectFn {
   (val: any): any
+}
+
+export interface AxiosTransformer {
+  (data: any, headers?: any): any
 }
