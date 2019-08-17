@@ -1,46 +1,62 @@
-import { isDate, isObject } from './util'
+import { isDate, isObject, isUrlSearchParams } from './util'
 
-function encode(val: string):string {
-  return encodeURIComponent(val)
-  .replace(/%40/g, '@')
-  .replace(/$3A/ig, ':')
-  .replace(/%24/g, '$')
-  .replace(/%2C/ig, ',')
-  .replace(/%20/g, '+')
-  .replace(/%5B/ig,'[')
-  .replace(/%5D/ig,']')
+interface URLOrigin {
+  protocol: string
+  host: string
 }
 
-export function buildURL(url: string, params?: any) : string {
+function encode(val: string): string {
+  return encodeURIComponent(val)
+    .replace(/%40/g, '@')
+    .replace(/$3A/gi, ':')
+    .replace(/%24/g, '$')
+    .replace(/%2C/gi, ',')
+    .replace(/%20/g, '+')
+    .replace(/%5B/gi, '[')
+    .replace(/%5D/gi, ']')
+}
+
+export function buildURL(
+  url: string,
+  params?: any,
+  paramsSerializer?: (params: any) => string
+): string {
   if (!params) {
     return url
   }
 
-  const parts: string[] = []
+  let serializeParams
 
-  Object.keys(params).forEach((key) => {
-    const val = params[key]
-    if (val === null || typeof val === undefined) {
-      return
-    }
-    let values = []
-    if (Array.isArray(val)) {
-      values = val
-      key += '[]'
-    } else {
-      values = [val]
-    }
-    values.forEach((val) => {
-      if (isDate(val)) {
-        val = val.toISOString()
-      } else if (isObject(val)) {
-        val = JSON.stringify(val)
+  if (paramsSerializer) {
+    serializeParams = paramsSerializer(params)
+  } else if (isUrlSearchParams(params)) {
+    serializeParams = params.toString()
+  } else {
+    const parts: string[] = []
+
+    Object.keys(params).forEach(key => {
+      const val = params[key]
+      if (val === null || typeof val === undefined) {
+        return
       }
-      parts.push(`${encode(key)}=${encode(val)}`)
+      let values = []
+      if (Array.isArray(val)) {
+        values = val
+        key += '[]'
+      } else {
+        values = [val]
+      }
+      values.forEach(val => {
+        if (isDate(val)) {
+          val = val.toISOString()
+        } else if (isObject(val)) {
+          val = JSON.stringify(val)
+        }
+        parts.push(`${encode(key)}=${encode(val)}`)
+      })
     })
-  })
-
-  let serializeParams = parts.join('&')
+    serializeParams = parts.join('&')
+  }
   if (serializeParams) {
     const marIndex = url.indexOf('#')
     if (marIndex !== -1) {
@@ -49,4 +65,29 @@ export function buildURL(url: string, params?: any) : string {
     url += (url.indexOf('?') === -1 ? '?' : '&') + serializeParams
   }
   return url
+}
+
+export function isAbsoluteURL(url: string): boolean {
+  return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url)
+}
+
+export function combineURL(baseURL: string, relativeURL?: string): string {
+  return relativeURL ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '') : baseURL
+}
+
+export function isUrlSameOrigin(requestURL: string): boolean {
+  const parseOrigin = resolveURL(requestURL)
+  return parseOrigin.protocol === currentOrigin.protocol && parseOrigin.host === currentOrigin.host
+}
+
+const urlParsingNode = document.createElement('a')
+const currentOrigin = resolveURL(window.location.href)
+
+function resolveURL(url: string): URLOrigin {
+  urlParsingNode.setAttribute('href', url)
+  const { protocol, host } = urlParsingNode
+  return {
+    protocol,
+    host
+  }
 }

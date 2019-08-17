@@ -1,10 +1,9 @@
-import {RejectFn, ResolveFn} from '../types'
+import { RejectFn, ResolveFn } from '../types'
 
 interface Interceptor<T> {
-  resolve: ResolveFn<T>,
+  resolve: ResolveFn<T>
   reject?: RejectFn
 }
-
 
 export default class InterceptorManager<T> {
   private interceptors: Array<Interceptor<T> | null>
@@ -22,7 +21,7 @@ export default class InterceptorManager<T> {
   }
 
   forEach(fn: (interceptor: Interceptor<T>) => void): void {
-    this.interceptors.forEach((interceptor) => {
+    this.interceptors.forEach(interceptor => {
       if (interceptor !== null) {
         fn(interceptor)
       }
@@ -31,8 +30,7 @@ export default class InterceptorManager<T> {
 
   eject(id: number): void {
     if (this.interceptors[id]) {
-      this.interceptors[id] == null
+      this.interceptors[id] = null
     }
   }
-
 }
