@@ -28,11 +28,13 @@ export interface AxiosRequestConfig {
   transformResponse?: AxiosTransformer | AxiosTransformer[]
   cancelToken?: CancelToken
   withCredentials?: boolean
+  addCookieName?: string
+  addHeaderName?: string
   xsrfCookieName?: string
   xsrfHeaderName?: string
-  onDownLoadProgress: (e: ProgressEvent) => void
-  onUpLoadProgress: (e: ProgressEvent) => void
-  auth: AxiosBasicCredentials
+  onDownLoadProgress?: (e: ProgressEvent) => void
+  onUpLoadProgress?: (e: ProgressEvent) => void
+  auth?: AxiosBasicCredentials
   validateStatus?: (status: number) => boolean
   paramsSerializer?: (params: any) => string
   baseURL?: string

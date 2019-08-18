@@ -1,6 +1,7 @@
 import { AxiosRequestConfig } from './types'
 import { processHeaders } from './helpers/header'
 import { transformRequest, transformResponse } from './helpers/data'
+
 const defaults: AxiosRequestConfig = {
   method: 'get',
   timeout: 0,

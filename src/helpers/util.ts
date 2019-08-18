@@ -9,7 +9,7 @@ export function isObject(val: any): val is Object {
 }
 
 export function isPlainObject(val: any): val is Object {
-  return toString.call(val) === '[object object]'
+  return toString.call(val) === '[object Object]'
 }
 
 export function extend<T, U>(from: T, to: U): T & U {
