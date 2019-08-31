@@ -35,6 +35,7 @@ export default class Axios {
     }
 
     config = mergeConfig(this.defaults, config)
+    config.method = config.method.toLowerCase()
 
     const chain: PromiseChain<any>[] = [
       {
