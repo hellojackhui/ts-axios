@@ -1,6 +1,6 @@
 {
-  "name": "ts-axios",
-  "version": "0.0.0",
+  "name": "ts-axios-mini",
+  "version": "0.1.0",
   "description": "",
   "keywords": [],
   "main": "dist/ts-axios.umd.js",
@@ -12,7 +12,7 @@
   "author": "hellojackhui <huijiawe.i@163.com>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/hellojackhui/ts-axios.git"
   },
   "license": "MIT",
   "engines": {
@@ -33,7 +33,9 @@
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "precommit": "lint-staged",
-    "travis-deploy-once": "travis-deploy-once"
+    "travis-deploy-once": "travis-deploy-once",
+    "prepub": "npm run build",
+    "pub": "sh release.sh"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -93,6 +95,7 @@
     "@types/node": "^10.11.0",
     "@types/nprogress": "^0.0.29",
     "nprogress": "0.2.0",
+    "atob": "^2.1.2",
     "style-loader": "^1.0.0",
     "css-loader": "^3.2.0",
     "colors": "^1.3.2",
@@ -134,5 +137,8 @@
     "body-parser": "^1.19.0",
     "jasmine-ajax": "^4.0.0",
     "jasmine-core": "^3.4.0"
+  },
+  "dependencies": {
+    "@types/jasmine-ajax": "^3.3.0"
   }
 }

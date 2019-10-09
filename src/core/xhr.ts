@@ -118,10 +118,17 @@ export default function xhr(config: AxiosRequestConfig): AxioPromise {
 
     function processCancel(): void {
       if (cancelToken) {
-        cancelToken.promise.then(reason => {
-          request.abort()
-          reject(reason)
-        })
+        cancelToken.promise
+          .then(reason => {
+            request.abort()
+            reject(reason)
+          })
+          .catch(
+            /* istanbul ignone next*/
+            () => {
+              // do nothing
+            }
+          )
       }
     }
 

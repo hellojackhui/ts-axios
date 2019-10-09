@@ -1,5 +1,3 @@
-import Axios from '../core/Axios'
-
 export type Method =
   | 'get'
   | 'GET'
@@ -77,7 +75,7 @@ export interface Axios {
 
   head<T = any>(url: string, config: AxiosRequestConfig): AxioPromise<T>
 
-  post<T = any>(url: string, data: any, config: AxiosRequestConfig): AxioPromise<T>
+  post<T = any>(url: string, data: any, config?: AxiosRequestConfig): AxioPromise<T>
 
   put<T = any>(url: string, data: any, config: AxiosRequestConfig): AxioPromise<T>
 
